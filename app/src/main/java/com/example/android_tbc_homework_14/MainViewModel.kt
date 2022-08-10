@@ -12,16 +12,16 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 
 class MainViewModel(private val repository: Repository): ViewModel() {
-    private val _myState= MutableStateFlow<MyResponseState>(MyResponseState.Empty) //mutable state flow
-    val myState: StateFlow<MyResponseState> = _myState //immutable state flow
+    private val _myState= MutableStateFlow<MyResponseState<Items>>(MyResponseState.Empty()) //mutable state flow
+    val myState: StateFlow<MyResponseState<Items>> = _myState //immutable state flow
 
     fun getInfo(){
         viewModelScope.launch {
-            _myState.emit(MyResponseState.Loading)
+            _myState.emit(MyResponseState.Loading())
             val response: Response<Items> = repository.getPost()
             val body: Items? = response.body()
-            if (response.isSuccessful && body != null) {
-                _myState.emit(MyResponseState.Success(body))
+            if (response.isSuccessful && response.body() != null) {
+                _myState.emit(MyResponseState.Success(body!!))
             }
             else {
 //            _myState.value = MyResponseState.Error(response.errorBody().toString())
@@ -30,11 +30,11 @@ class MainViewModel(private val repository: Repository): ViewModel() {
         }
     }
 
-    sealed class MyResponseState {
-        data class Success(val items: Items) : MyResponseState()
-        data class Error(val message: String?) : MyResponseState()
-        object Loading : MyResponseState()
-        object Empty : MyResponseState()
+    sealed class MyResponseState<T>{
+        data class Success<T>(val items: T) : MyResponseState<T>()
+        data class Error<T>(val message: String?) : MyResponseState<T>()
+        class Loading<T>: MyResponseState<T>()
+        class Empty<T> : MyResponseState<T>()
 
     }
 }
