@@ -11,6 +11,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.android_tbc_homework_14.MainViewModel
 import com.example.android_tbc_homework_14.MainViewModelFactory
+import com.example.android_tbc_homework_14.MyResponseState
 import com.example.android_tbc_homework_14.adapter.ItemsListAdapter
 import com.example.android_tbc_homework_14.databinding.ActivityMainBinding
 import com.example.android_tbc_homework_14.repository.Repository
@@ -41,14 +42,14 @@ class MainActivity : AppCompatActivity() {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.myState.collect{
                     when(it){
-                        is MainViewModel.MyResponseState.Loading -> {
+                        is MyResponseState.Loading -> {
                             binding.progressBar.visibility = View.VISIBLE
                         }
-                        is MainViewModel.MyResponseState.Error -> {
+                        is MyResponseState.Error -> {
                             binding.finalText.text = it.message
                             binding.progressBar.visibility = View.GONE
                         }
-                        is MainViewModel.MyResponseState.Success -> {
+                        is MyResponseState.Success -> {
                             binding.progressBar.visibility = View.GONE
                             adapter.submitList(it.items.content)
 //                            binding.finalText.text = it.items.toString()
